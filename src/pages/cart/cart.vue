@@ -1,4 +1,4 @@
-<!-- 静态数据演示版本 适合任何后端
+<!-- 静态数据演示版本 适合任何后端 -->
 <template>
   <view class="app">
     <button @click="openSkuPopup()">打开SKU组件</button>
@@ -151,4 +151,4 @@ export default {
   padding: 30rpx;
   font-size: 28rpx;
 }
-</style> -->
+</style>
