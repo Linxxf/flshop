@@ -23,6 +23,21 @@ const goodsInfo = async () => {
   goods.value = res.result
   swiperArrLength.value = res.result.mainPictures.length
   console.log('商品信息', res)
+  localdata.value = {
+    _id: res.result.id,
+    name: res.result.name,
+    goods_thumb: res.result.mainPictures[0],
+    spec_list: res.result.specs.map((v) => ({ name: v.name, list: v.values })),
+    sku_list: res.result.skus.map((v) => ({
+      _id: v.id,
+      goods_id: res.result.id,
+      goods_name: res.result.name,
+      image: v.picture,
+      price: v.price * 100, // 注意：需要乘以 100
+      stock: v.inventory,
+      sku_name_arr: v.specs.map((vv) => vv.valueName),
+    })),
+  }
 }
 
 //swiper下标发生变化
@@ -46,6 +61,28 @@ const openPupop = (type) => {
   popup.value.open()
 }
 
+
+
+//sku显示
+let showSku = ref(false)
+let localdata = ref({})
+
+// 按钮模式 || 打开sku模式
+const SkuMode  = {
+  Both : 1,
+  Cart : 2,
+  Buy : 3,
+}
+let mode = ref(0)
+
+// sku显示事件
+const onShowSku = (value) => {
+  showSku.value = true
+  mode.value = value
+}
+
+
+
 let isLoading = ref('true')
 
 onLoad(async (options) => {
@@ -57,6 +94,8 @@ onLoad(async (options) => {
 </script>
 
 <template>
+  <vk-data-goods-sku-popup  v-model="showSku" :localdata="localdata" :mode="mode" add-cart-background-color="#FFA868"
+  buy-now-background-color="#B18600" />
   <!-- 骨架屏 -->
   <PageSkeletion v-if="isLoading == true" />
   <scroll-view scroll-y class="viewport" v-if="isLoading == false">
@@ -88,7 +127,7 @@ onLoad(async (options) => {
 
       <!-- 操作面板 -->
       <view class="action">
-        <view class="item arrow">
+        <view class="item arrow" @click="onShowSku(SkuMode.Both)">
           <text class="label">选择</text>
           <text class="text ellipsis"> 请选择商品规格 </text>
         </view>
@@ -157,8 +196,8 @@ onLoad(async (options) => {
       </navigator>
     </view>
     <view class="buttons">
-      <view class="addcart"> 加入购物车 </view>
-      <view class="buynow"> 立即购买 </view>
+      <view class="addcart" @click="onShowSku(SkuMode.Cart)"> 加入购物车 </view>
+      <view class="buynow" @click="onShowSku(SkuMode.Buy)"> 立即购买 </view>
     </view>
   </view>
 
