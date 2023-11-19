@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { getGoodsInfo } from '@/services/goods'
 import { onLoad } from '@dcloudio/uni-app'
-import { ref } from 'vue'
+import { ref , computed } from 'vue'
+import {postMemberCart} from '@/services/cart'
 import addressPanel from './components/addressPanel'
 import servicePanel from './components/servicePanel'
 import PageSkeletion from './components/PageSkeletion'
@@ -66,6 +67,15 @@ const openPupop = (type) => {
 //sku显示
 let showSku = ref(false)
 let localdata = ref({})
+//获取sku实例
+let sku = ref()
+
+//选择商品规格展示
+let skuArr = computed(()=>{
+  // console.log('sku商品规格',sku.value?.selectArr);
+  return sku.value?.selectArr.join(' ').trim() || '请选择商品规格'
+})
+
 
 // 按钮模式 || 打开sku模式
 const SkuMode  = {
@@ -81,7 +91,20 @@ const onShowSku = (value) => {
   mode.value = value
 }
 
-
+//添加购物车
+const onCartAdd = async (ev) => {
+  // console.log('添加购物车',ev);
+  let res = await postMemberCart({
+    skuId:ev._id,
+    count:ev.buy_num
+  })
+  // console.log('添加购物车-finsh',res);
+  uni.showToast({
+    title: '添加成功',
+    icon: 'success',
+  })
+  showSku.value = false
+}
 
 let isLoading = ref('true')
 
@@ -90,12 +113,23 @@ onLoad(async (options) => {
   goodsId.value = options.id
   await goodsInfo()
   isLoading.value = false
+  
 })
 </script>
 
 <template>
-  <vk-data-goods-sku-popup  v-model="showSku" :localdata="localdata" :mode="mode" add-cart-background-color="#FFA868"
-  buy-now-background-color="#B18600" />
+  <vk-data-goods-sku-popup  v-model="showSku" 
+  :localdata="localdata" 
+  :mode="mode" 
+  add-cart-background-color="#FFA868"
+  buy-now-background-color="#B18600"
+  :actived-style="{
+    color:'#B18600',
+    borderColor:'#B18600'
+  }"
+  ref="sku"
+  @add-cart="onCartAdd"
+   />
   <!-- 骨架屏 -->
   <PageSkeletion v-if="isLoading == true" />
   <scroll-view scroll-y class="viewport" v-if="isLoading == false">
@@ -129,7 +163,7 @@ onLoad(async (options) => {
       <view class="action">
         <view class="item arrow" @click="onShowSku(SkuMode.Both)">
           <text class="label">选择</text>
-          <text class="text ellipsis"> 请选择商品规格 </text>
+          <text class="text ellipsis"> {{skuArr}} </text>
         </view>
         <view class="item arrow" @click="openPupop('address')">
           <text class="label">送至</text>

@@ -1,4 +1,4 @@
-import { http } from '@/utils/http.ts'
+import { http } from '@/utils/http'
 
 //首页广告轮播图
 export const getBannerInfo = (distributionSite: any) => {

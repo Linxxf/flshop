@@ -26,7 +26,8 @@ const onPostWXLogin = async () => {
   //保存会员信息
   const memberStroe = useMemberStore()
   memberStroe.setProfile(res.result)
-  uni.switchTab({ url: '/pages/my/my' })
+  // uni.switchTab({ url: '/pages/my/my' })
+  uni.navigateBack()
 }
 
 onLoad(() => {})
