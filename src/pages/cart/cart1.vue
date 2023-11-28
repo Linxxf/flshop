@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import cartMain from './components/cartMain'
+    import cartMain from './components/cartMain'
 </script>
 
 <template>
-  <cartMain />
+    <cartMain />
 </template>
 
 <style lang="scss">

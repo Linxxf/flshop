@@ -31,3 +31,11 @@ export const putMemberCartAmend = (skuId:string,data:any) => {
         data
     })
 }
+
+export const putMemberCartSelectedAll = (data:any) => {
+    return http({
+        method:'PUT',
+        url:'/member/cart/selected',
+        data
+    })
+}
